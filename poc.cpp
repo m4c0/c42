@@ -422,8 +422,7 @@ int main() try {
   auto tokens = phase_4(phase_3(phase_2(phase_1(buf))));
 
   for (auto t : tokens) {
-    put(fn, ':', t.line, ':', t.column, ": ");
-    putfn("[%.*s]", (t.end - t.begin + 1), buf.begin() + t.begin);
+    putf("%.*s", (t.end - t.begin + 1), buf.begin() + t.begin);
   }
 } catch (...) {
   return 1;
