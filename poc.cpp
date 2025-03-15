@@ -5,6 +5,7 @@ import jute;
 import print;
 
 enum token_type : int {
+  t_pp = -10,
   t_module = -9,
   t_import = -8,
   t_pp_number = -7,
@@ -389,7 +390,17 @@ static auto phase_4(const hai::chain<token> & t) {
 
     auto t = str.take();
     if (t.type == '#') {
+      t.type = t_pp;
       consume_space(str);
+
+      if (!str.has_more()) break;
+
+      auto op = str.take();
+      if (!str.has_more()) {
+        t.end = op.end;
+        res.push_back(t);
+        break;
+      }
 
       auto nt = t;
       while (str.has_more() && nt.type != t_new_line) {
