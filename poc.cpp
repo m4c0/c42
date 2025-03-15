@@ -5,7 +5,7 @@ import jute;
 import print;
 
 enum token_type : int {
-  t_pp = -10,
+  t_directive = -10,
   t_module = -9,
   t_import = -8,
   t_pp_number = -7,
@@ -395,17 +395,14 @@ static auto phase_4(const hai::chain<token> & t) {
       if (!str.has_more()) break;
 
       t = str.take();
-      t.type = t_pp;
-      res.push_back(t);
-      continue;
-    }
-    if (t.type == t_import) {
+      t.type = t_directive;
       consume_space(str);
-      continue;
+    } else if (t.type == t_import) {
+      consume_space(str);
     } else if (t.type == t_module) {
       consume_space(str);
-      continue;
     }
+
     res.push_back(t);
     while (str.has_more() && t.type != t_new_line) {
       t = str.take();
