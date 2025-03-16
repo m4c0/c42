@@ -6,8 +6,10 @@ export import a;
 import b;
 
 #ifdef _WIN32
+#warning windows is just a hack
 #define main \
   WinMain
+#else
 #endif
 
 int main() { printf("ok\n"); }

@@ -413,28 +413,38 @@ static auto phase_4_1(const hai::chain<token> & t) {
   return res;
 }
 
-static auto phase_4_2(const hai::chain<token> & t) {
+static auto phase_4_2(const char * buf, const hai::chain<token> & t) {
   hai::chain<token> res { t.size() };
   token_stream str { t };
   while (str.has_more()) {
     auto t = str.take();
+
+    if (t.type == t_directive) {
+      auto txt = jute::view { buf + t.begin, t.end - t.begin + 1 };
+      errln(txt);
+    }
+
     res.push_back(t);
+    while (str.has_more() && t.type != t_new_line) {
+      t = str.take();
+      res.push_back(t);
+    }
   }
   return res;
 }
 
-static auto phase_4(const hai::chain<token> & t) {
-  return phase_4_2(phase_4_1(t));
+static auto phase_4(const char * buf, const hai::chain<token> & t) {
+  return phase_4_2(buf, phase_4_1(t));
 }
 // }}}
 
 int main() try {
-  jute::view fn = "tests/example.cpp";
+  jute::view fn = "tests/preproc.cppm";
   auto buf = jojo::read_cstr(fn);
-  auto tokens = phase_4(phase_3(phase_2(phase_1(buf))));
+  auto tokens = phase_4(buf.begin(), phase_3(phase_2(phase_1(buf))));
 
   for (auto t : tokens) {
-    putf("%.*s", (t.end - t.begin + 1), buf.begin() + t.begin);
+    putf("[%d]%.*s", t.type, (t.end - t.begin + 1), buf.begin() + t.begin);
   }
 } catch (...) {
   return 1;
