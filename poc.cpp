@@ -383,7 +383,7 @@ static void consume_space(token_stream &str) {
 }
 
 /// Translates preprocessor directives (#, import, export) into custom tokens
-static auto phase_4(const hai::chain<token> & t) {
+static auto phase_4_1(const hai::chain<token> & t) {
   hai::chain<token> res { t.size() };
   token_stream str{t};
   while (str.has_more()) {
@@ -411,6 +411,20 @@ static auto phase_4(const hai::chain<token> & t) {
     }
   }
   return res;
+}
+
+static auto phase_4_2(const hai::chain<token> & t) {
+  hai::chain<token> res { t.size() };
+  token_stream str { t };
+  while (str.has_more()) {
+    auto t = str.take();
+    res.push_back(t);
+  }
+  return res;
+}
+
+static auto phase_4(const hai::chain<token> & t) {
+  return phase_4_2(phase_4_1(t));
 }
 // }}}
 
