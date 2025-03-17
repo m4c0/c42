@@ -5,6 +5,7 @@ import jute;
 import print;
 
 enum token_type : int {
+  t_error = -11,
   t_directive = -10,
   t_module = -9,
   t_import = -8,
@@ -421,7 +422,19 @@ static auto phase_4_2(const char * buf, const hai::chain<token> & t) {
 
     if (t.type == t_directive) {
       auto txt = jute::view { buf + t.begin, t.end - t.begin + 1 };
-      errln(txt);
+      if (txt == "error") {
+        auto t = str.take();
+        auto rt = t;
+        auto nt = t;
+        while (str.has_more() && t.type != t_new_line) {
+          nt = t;
+          t = str.take();
+        }
+        rt.type = t_error;
+        rt.end = nt.end;
+        res.push_back(rt);
+        continue;
+      }
     }
 
     res.push_back(t);
@@ -443,9 +456,20 @@ int main() try {
   auto buf = jojo::read_cstr(fn);
   auto tokens = phase_4(buf.begin(), phase_3(phase_2(phase_1(buf))));
 
+  bool has_error = false;
+  for (auto t : tokens) {
+    if (t.type == t_error) {
+      errln(fn, ":", t.line, ":", t.column, ": ",
+          jute::view { buf.begin() + t.begin, t.end - t.begin + 1 });
+      has_error = true;
+    }
+  }
+  if (has_error) return 1;
+
   for (auto t : tokens) {
     putf("[%d]%.*s", t.type, (t.end - t.begin + 1), buf.begin() + t.begin);
   }
+  return 0;
 } catch (...) {
   return 1;
 }
