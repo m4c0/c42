@@ -5,6 +5,7 @@ import jute;
 import print;
 
 enum token_type : int {
+  t_warning = -12,
   t_error = -11,
   t_directive = -10,
   t_module = -9,
@@ -422,7 +423,7 @@ static auto phase_4_2(const char * buf, const hai::chain<token> & t) {
 
     if (t.type == t_directive) {
       auto txt = jute::view { buf + t.begin, t.end - t.begin + 1 };
-      if (txt == "error") {
+      if (txt == "error" || txt == "warning") {
         auto t = str.take();
         auto rt = t;
         auto nt = t;
@@ -430,7 +431,7 @@ static auto phase_4_2(const char * buf, const hai::chain<token> & t) {
           nt = t;
           t = str.take();
         }
-        rt.type = t_error;
+        rt.type = txt == "error" ? t_error : t_warning;
         rt.end = nt.end;
         res.push_back(rt);
         continue;
@@ -458,8 +459,12 @@ int main() try {
 
   bool has_error = false;
   for (auto t : tokens) {
-    if (t.type == t_error) {
-      errln(fn, ":", t.line, ":", t.column, ": ",
+    if (t.type == t_warning) {
+      errln(fn, ":", t.line, ":", t.column, ": [warning] ",
+          jute::view { buf.begin() + t.begin, t.end - t.begin + 1 });
+      has_error = true;
+    } else if (t.type == t_error) {
+      errln(fn, ":", t.line, ":", t.column, ": [error] ",
           jute::view { buf.begin() + t.begin, t.end - t.begin + 1 });
       has_error = true;
     }
