@@ -457,15 +457,17 @@ int main() try {
   auto buf = jojo::read_cstr(fn);
   auto tokens = phase_4(buf.begin(), phase_3(phase_2(phase_1(buf))));
 
+  const auto log = [&](auto t, jute::view lvl) {
+    errln(fn, ":", t.line, ":", t.column, ": [", lvl, "] ",
+        jute::view { buf.begin() + t.begin, t.end - t.begin + 1 });
+  };
+
   bool has_error = false;
   for (auto t : tokens) {
     if (t.type == t_warning) {
-      errln(fn, ":", t.line, ":", t.column, ": [warning] ",
-          jute::view { buf.begin() + t.begin, t.end - t.begin + 1 });
-      has_error = true;
+      log(t, "warning");
     } else if (t.type == t_error) {
-      errln(fn, ":", t.line, ":", t.column, ": [error] ",
-          jute::view { buf.begin() + t.begin, t.end - t.begin + 1 });
+      log(t, "error");
       has_error = true;
     }
   }
