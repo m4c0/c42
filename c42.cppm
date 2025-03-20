@@ -433,6 +433,12 @@ static auto phase_4_2(const char * buf, const hai::chain<token> & t) {
         rt.end = nt.end;
         res.push_back(rt);
         continue;
+      } else if (txt == "embed") {
+        t = str.take();
+        while (t.type != t_new_line) {
+          t = str.take();
+        }
+        continue;
       }
     }
 
