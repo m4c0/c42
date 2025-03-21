@@ -2,5 +2,6 @@
 
 C++ Pre-preprocessor
 
-This is just a proof-of-context. Idea is to get a C++ source, preprocess,
-augment it then output source in standard C++.
+This is a proof of concept. The objective is to preprocess a C++ source file,
+enhance it, and output the result in standard C++. Enhancements will be made
+using custom pragmas.
