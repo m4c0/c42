@@ -16,9 +16,9 @@ int main() try {
 
   bool has_error = false;
   for (auto t : tokens) {
-    if (t.type == t_warning) {
+    if (t.type == c42::t_warning) {
       log(t, "warning");
-    } else if (t.type == t_error) {
+    } else if (t.type == c42::t_error) {
       log(t, "error");
       has_error = true;
     }
