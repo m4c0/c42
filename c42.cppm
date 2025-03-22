@@ -3,9 +3,36 @@ import :phases13;
 import :tokens;
 import hai;
 import jute;
+import traits;
 
 using namespace c42;
 using namespace jute::literals;
+
+class context {
+  const char * m_buf;
+  hai::chain<token> m_t; 
+
+public:
+  constexpr context(const char * buf, unsigned size)
+    : m_buf { buf }
+    , m_t { size }
+  {}
+
+  constexpr context(const char * buf, hai::chain<token> t)
+    : m_buf { buf }
+    , m_t { traits::move(t) }
+  {}
+
+  [[nodiscard]] context shallow() const { return context { m_buf, m_t.size() }; }
+  [[nodiscard]] token_stream stream() const { return token_stream { m_t }; }
+  [[nodiscard]] jute::view txt(token t) const {
+    return jute::view { m_buf + t.begin, t.end - t.begin };
+  }
+
+  auto take() { return traits::move(m_t); }
+
+  void push_back(token t) { m_t.push_back(t); }
+};
 
 static void consume_space(token_stream &str) {
   while (str.peek().type == t_space) {
@@ -14,9 +41,9 @@ static void consume_space(token_stream &str) {
 }
 
 /// Translates preprocessor directives (#, import, export) into custom tokens
-static auto phase_4_1(const hai::chain<token> & t) {
-  hai::chain<token> res { t.size() };
-  token_stream str{t};
+static auto phase_4_1(const context & ctx) {
+  context res = ctx.shallow();
+  auto str = ctx.stream();
   while (str.has_more()) {
     consume_space(str);
 
@@ -44,14 +71,15 @@ static auto phase_4_1(const hai::chain<token> & t) {
   return res;
 }
 
-static auto phase_4_2(const char * buf, const hai::chain<token> & t) {
-  hai::chain<token> res { t.size() };
-  token_stream str { t };
+/// Process supported directives
+static auto phase_4_2(const context & ctx) {
+  context res = ctx.shallow();
+  auto str = ctx.stream();
   while (str.has_more()) {
     auto t = str.take();
 
     if (t.type == t_directive) {
-      auto txt = jute::view { buf + t.begin, t.end - t.begin + 1 };
+      auto txt = ctx.txt(t);
       if (txt == "error" || txt == "warning") {
         auto t = str.take();
         auto rt = t;
@@ -62,7 +90,7 @@ static auto phase_4_2(const char * buf, const hai::chain<token> & t) {
         }
         rt.type = txt == "error" ? t_error : t_warning;
         rt.end = nt.end;
-        rt.value = jute::view { buf + rt.begin, rt.end - rt.begin + 1 };
+        rt.value = ctx.txt(rt);
         res.push_back(rt);
         continue;
       } else if (txt == "embed") {
@@ -93,12 +121,13 @@ static auto phase_4_2(const char * buf, const hai::chain<token> & t) {
   return res;
 }
 
-static auto phase_4(const char * buf, const hai::chain<token> & t) {
-  return phase_4_2(buf, phase_4_1(t));
+static auto phase_4(const context & ctx) {
+  return phase_4_2(phase_4_1(ctx));
 }
 
 export namespace c42 {
   auto preprocess(const hai::cstr & buf) {
-    return phase_4(buf.begin(), phase_3(phase_2(phase_1(buf))));
+    context ctx { buf.begin(), phase_3(phase_2(phase_1(buf))) };
+    return phase_4(ctx).take();
   }
 }
