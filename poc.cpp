@@ -11,8 +11,7 @@ int main() try {
   auto tokens = c42::preprocess(buf);
 
   const auto log = [&](auto t, jute::view lvl) {
-    errln(fn, ":", t.line, ":", t.column, ": [", lvl, "] ",
-        jute::view { buf.begin() + t.begin, t.end - t.begin + 1 });
+    errln(fn, ":", t.line, ":", t.column, ": [", lvl, "] ", t.value);
   };
 
   bool has_error = false;

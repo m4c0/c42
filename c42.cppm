@@ -20,6 +20,7 @@ enum token_type : int {
 };
 struct token {
   token_type type;
+  jute::heap value {};
   unsigned begin;
   unsigned end;
   unsigned line;
@@ -431,6 +432,7 @@ static auto phase_4_2(const char * buf, const hai::chain<token> & t) {
         }
         rt.type = txt == "error" ? t_error : t_warning;
         rt.end = nt.end;
+        rt.value = jute::view { buf + rt.begin, rt.end - rt.begin + 1 };
         res.push_back(rt);
         continue;
       } else if (txt == "embed") {
