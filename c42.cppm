@@ -2,7 +2,10 @@ export module c42;
 import hai;
 import jute;
 
+using namespace jute::literals;
+
 enum token_type : int {
+  t_embed = -13,
   t_warning = -12,
   t_error = -11,
   t_directive = -10,
@@ -436,9 +439,19 @@ static auto phase_4_2(const char * buf, const hai::chain<token> & t) {
         res.push_back(rt);
         continue;
       } else if (txt == "embed") {
-        t = str.take();
-        while (t.type != t_new_line) {
+        while (str.has_more()) {
+          consume_space(str);
           t = str.take();
+          if (t.type == t_new_line) break;
+          if (t.type != t_str) {
+            auto nt = t;
+            nt.type = t_error;
+            nt.value = "Embeddable filenames must be strings"_hs;
+            res.push_back(nt);
+            continue;
+          }
+          t.type = t_embed;
+          res.push_back(t);
         }
         continue;
       }
