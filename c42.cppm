@@ -26,7 +26,7 @@ public:
   [[nodiscard]] context shallow() const { return context { m_buf, m_t.size() }; }
   [[nodiscard]] token_stream stream() const { return token_stream { m_t }; }
   [[nodiscard]] jute::view txt(token t) const {
-    return jute::view { m_buf + t.begin, t.end - t.begin };
+    return jute::view { m_buf + t.begin, t.end - t.begin + 1 };
   }
 
   auto take() { return traits::move(m_t); }
