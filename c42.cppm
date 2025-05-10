@@ -105,7 +105,8 @@ static auto phase_4_2(const context & ctx) {
             res.push_back(nt);
             continue;
           }
-          t.type = t_embed;
+          t.type = t_error;
+          t.value = "TBD - embed " + ctx.txt(t);
           res.push_back(t);
         }
         continue;

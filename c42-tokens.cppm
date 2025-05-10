@@ -4,7 +4,6 @@ import hai;
 
 namespace c42 {
   export enum token_type : int {
-    t_embed = -13,
     t_warning = -12,
     t_error = -11,
     t_directive = -10,
