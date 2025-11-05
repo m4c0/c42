@@ -1,3 +1,5 @@
+#pragma mytool myparam
+
 module;
 #include <stdio.h>
 #include "header.h"
