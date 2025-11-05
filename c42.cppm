@@ -40,6 +40,21 @@ static void consume_space(token_stream &str) {
   }
 }
 
+static auto take_until_eol(const context & ctx, token_stream & str, token_type type) {
+  auto t = str.take();
+  auto rt = t;
+  auto nt = t;
+  while (str.has_more() && t.type != t_new_line) {
+    nt = t;
+    t = str.take();
+  }
+  if (t.type == t_new_line) t = str.take();
+  rt.type = type;
+  rt.end = nt.end;
+  rt.value = jute::heap { ctx.txt(rt) };
+  return rt;
+}
+
 /// Translates preprocessor directives (#, import, export) into custom tokens
 static auto phase_4_1(const context & ctx) {
   context res = ctx.shallow();
@@ -54,8 +69,25 @@ static auto phase_4_1(const context & ctx) {
       if (!str.has_more()) break;
 
       t = str.take();
-      t.type = t_directive;
-      consume_space(str);
+      if (t.type != t_identifier) {
+        // TODO: error message
+        t.type = t_error;
+      } else if (ctx.txt(t) == "error") {
+        consume_space(str);
+        res.push_back(take_until_eol(ctx, str, t_error));
+        continue;
+      } else if (ctx.txt(t) == "pragma") {
+        consume_space(str);
+        res.push_back(take_until_eol(ctx, str, t_pragma));
+        continue;
+      } else if (ctx.txt(t) == "warning") {
+        consume_space(str);
+        res.push_back(take_until_eol(ctx, str, t_warning));
+        continue;
+      } else {
+        t.type = t_directive;
+        consume_space(str);
+      }
     } else if (t.type == t_identifier && ctx.txt(t) == "export") {
       t.type = t_export;
       res.push_back(t);
@@ -81,41 +113,6 @@ static auto phase_4_2(const context & ctx) {
   auto str = ctx.stream();
   while (str.has_more()) {
     auto t = str.take();
-
-    if (t.type == t_directive) {
-      auto txt = ctx.txt(t);
-      if (txt == "error" || txt == "warning") {
-        auto t = str.take();
-        auto rt = t;
-        auto nt = t;
-        while (str.has_more() && t.type != t_new_line) {
-          nt = t;
-          t = str.take();
-        }
-        rt.type = txt == "error" ? t_error : t_warning;
-        rt.end = nt.end;
-        rt.value = jute::heap { ctx.txt(rt) };
-        res.push_back(rt);
-        continue;
-      // } else if (txt == "embed") {
-      //   while (str.has_more()) {
-      //     consume_space(str);
-      //     t = str.take();
-      //     if (t.type == t_new_line) break;
-      //     if (t.type != t_str) {
-      //       auto nt = t;
-      //       nt.type = t_error;
-      //       nt.value = "Embeddable filenames must be strings"_hs;
-      //       res.push_back(nt);
-      //       continue;
-      //     }
-      //     t.type = t_error;
-      //     t.value = "TBD - embed " + ctx.txt(t);
-      //     res.push_back(t);
-      //   }
-      //   continue;
-      }
-    }
 
     res.push_back(t);
     while (str.has_more() && t.type != t_new_line) {
