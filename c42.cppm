@@ -51,7 +51,6 @@ static auto take_until_eol(const context & ctx, token_stream & str, token_type t
   if (t.type == t_new_line) t = str.take();
   rt.type = type;
   rt.end = nt.end;
-  rt.value = jute::heap { ctx.txt(rt) };
   return rt;
 }
 

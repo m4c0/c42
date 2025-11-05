@@ -23,7 +23,6 @@ namespace c42 {
   };
   export struct token {
     token_type type;
-    jute::heap value {};
     unsigned begin;
     unsigned end;
     unsigned line;
