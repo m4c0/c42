@@ -10,24 +10,24 @@ using namespace c42;
 using namespace jute::literals;
 
 class context {
-  const char * m_buf;
+  const char * m_orig_src;
   hai::chain<token> m_t; 
 
 public:
-  constexpr context(const char * buf, unsigned size)
-    : m_buf { buf }
-    , m_t { size }
+  constexpr context(const char * orig_src, unsigned tk_buf_size)
+    : m_orig_src { orig_src }
+    , m_t { tk_buf_size }
   {}
 
-  constexpr context(const char * buf, hai::chain<token> t)
-    : m_buf { buf }
+  constexpr context(const char * orig_src, hai::chain<token> t)
+    : m_orig_src { orig_src }
     , m_t { traits::move(t) }
   {}
 
-  [[nodiscard]] context shallow() const { return context { m_buf, m_t.size() }; }
+  [[nodiscard]] context shallow() const { return context { m_orig_src, m_t.size() }; }
   [[nodiscard]] token_stream stream() const { return token_stream { m_t }; }
   [[nodiscard]] jute::view txt(token t) const {
-    return jute::view { m_buf + t.begin, t.end - t.begin + 1 };
+    return jute::view { m_orig_src + t.begin, t.end - t.begin + 1 };
   }
 
   auto take() { return traits::move(m_t); }
