@@ -90,26 +90,26 @@ static auto phase_4_2(const context & ctx) {
         }
         rt.type = txt == "error" ? t_error : t_warning;
         rt.end = nt.end;
-        rt.value = ctx.txt(rt);
+        rt.value = jute::heap { ctx.txt(rt) };
         res.push_back(rt);
         continue;
-      } else if (txt == "embed") {
-        while (str.has_more()) {
-          consume_space(str);
-          t = str.take();
-          if (t.type == t_new_line) break;
-          if (t.type != t_str) {
-            auto nt = t;
-            nt.type = t_error;
-            nt.value = "Embeddable filenames must be strings"_hs;
-            res.push_back(nt);
-            continue;
-          }
-          t.type = t_error;
-          t.value = "TBD - embed " + ctx.txt(t);
-          res.push_back(t);
-        }
-        continue;
+      // } else if (txt == "embed") {
+      //   while (str.has_more()) {
+      //     consume_space(str);
+      //     t = str.take();
+      //     if (t.type == t_new_line) break;
+      //     if (t.type != t_str) {
+      //       auto nt = t;
+      //       nt.type = t_error;
+      //       nt.value = "Embeddable filenames must be strings"_hs;
+      //       res.push_back(nt);
+      //       continue;
+      //     }
+      //     t.type = t_error;
+      //     t.value = "TBD - embed " + ctx.txt(t);
+      //     res.push_back(t);
+      //   }
+      //   continue;
       }
     }
 
