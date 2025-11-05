@@ -35,7 +35,7 @@ static void consume_space(token_stream &str) {
   }
 }
 
-static auto take_until_eol(const context & ctx, token_stream & str, token_type type) {
+static auto take_until_eol(token_stream & str, token_type type) {
   consume_space(str);
 
   auto t = str.take();
@@ -49,6 +49,19 @@ static auto take_until_eol(const context & ctx, token_stream & str, token_type t
   rt.type = type;
   rt.end = nt.end;
   return rt;
+}
+
+static void take_no_param(context & res, token_stream & str, token t, token_type type) {
+  t.type = type;
+  res.push_back(t);
+
+  if (str.peek().type == t_new_line) {
+    t = str.take();
+    return;
+  }
+
+  // TODO: error message
+  res.push_back(take_until_eol(str, t_error));
 }
 
 /// Translates preprocessor directives (#, import, export) into custom tokens
@@ -68,14 +81,20 @@ static auto phase_4_1(const context & ctx) {
       if (t.type != t_identifier) {
         // TODO: error message
         t.type = t_error;
+      } else if (ctx.txt(t) == "else") {
+        take_no_param(res, str, t, t_else);
+        continue;
+      } else if (ctx.txt(t) == "endif") {
+        take_no_param(res, str, t, t_endif);
+        continue;
       } else if (ctx.txt(t) == "error") {
-        res.push_back(take_until_eol(ctx, str, t_error));
+        res.push_back(take_until_eol(str, t_error));
         continue;
       } else if (ctx.txt(t) == "pragma") {
-        res.push_back(take_until_eol(ctx, str, t_pragma));
+        res.push_back(take_until_eol(str, t_pragma));
         continue;
       } else if (ctx.txt(t) == "warning") {
-        res.push_back(take_until_eol(ctx, str, t_warning));
+        res.push_back(take_until_eol(str, t_warning));
         continue;
       } else {
         t.type = t_directive;
