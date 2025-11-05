@@ -12,23 +12,19 @@ class context {
   hai::chain<token> m_t; 
 
 public:
-  constexpr context(const char * orig_src, unsigned tk_buf_size)
-    : m_orig_src { orig_src }
-    , m_t { tk_buf_size }
-  {}
-
   constexpr context(const char * orig_src, hai::chain<token> t)
     : m_orig_src { orig_src }
     , m_t { traits::move(t) }
   {}
 
-  [[nodiscard]] context shallow() const { return context { m_orig_src, m_t.size() }; }
+  [[nodiscard]] context shallow() const { return context { m_orig_src, { m_t.size() } }; }
   [[nodiscard]] token_stream stream() const { return token_stream { m_t }; }
   [[nodiscard]] sv txt(token t) const {
     return { m_orig_src + t.begin, t.end - t.begin + 1 };
   }
 
-  auto take() { return traits::move(m_t); }
+  [[nodiscard]] auto begin() const { return m_t.begin(); }
+  [[nodiscard]] auto end() const { return m_t.end(); }
 
   void push_back(token t) { m_t.push_back(t); }
 };
@@ -128,6 +124,6 @@ static auto phase_4(const context & ctx) {
 export namespace c42 {
   auto preprocess(sv buf) {
     context ctx { buf.begin(), phase_3(phase_2(phase_1(buf))) };
-    return phase_4(ctx).take();
+    return phase_4(ctx);
   }
 }

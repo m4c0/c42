@@ -8,15 +8,14 @@ import print;
 int main() try {
   jute::view fn = "tests/preproc.cppm";
   auto buf = jojo::read_cstr(fn);
-  auto tokens = c42::preprocess(buf);
+  auto ctx = c42::preprocess(buf);
 
   const auto log = [&](auto t, jute::view lvl) {
-    auto msg = jute::view { buf }.subview(t.begin, t.end - t.begin + 1).middle;
-    errln(fn, ":", t.line, ":", t.column, ": [", lvl, "] ", msg);
+    errln(fn, ":", t.line, ":", t.column, ": [", lvl, "] ", ctx.txt(t));
   };
 
   bool has_error = false;
-  for (auto t : tokens) {
+  for (auto t : ctx) {
     if (t.type == c42::t_warning) {
       log(t, "warning");
     } else if (t.type == c42::t_error) {
@@ -26,8 +25,9 @@ int main() try {
   }
   if (has_error) return 1;
 
-  for (auto t : tokens) {
-    putf("[%d]%.*s", t.type, (t.end - t.begin + 1), buf.begin() + t.begin);
+  for (auto t : ctx) {
+    putf("[%d]", t.type);
+    put(ctx.txt(t));
   }
   return 0;
 } catch (...) {
