@@ -45,7 +45,6 @@ static auto take_until_eol(token_stream & str, token_type type) {
     nt = t;
     t = str.take();
   }
-  if (t.type == t_new_line) t = str.take();
   rt.type = type;
   rt.end = nt.end;
   return rt;
