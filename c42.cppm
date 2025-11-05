@@ -3,6 +3,7 @@ import :phases13;
 import :tokens;
 import hai;
 import jute;
+import sv;
 import traits;
 
 using namespace c42;
@@ -127,7 +128,7 @@ static auto phase_4(const context & ctx) {
 }
 
 export namespace c42 {
-  auto preprocess(const hai::cstr & buf) {
+  auto preprocess(sv buf) {
     context ctx { buf.begin(), phase_3(phase_2(phase_1(buf))) };
     return phase_4(ctx).take();
   }

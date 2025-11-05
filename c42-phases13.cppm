@@ -1,12 +1,14 @@
 export module c42:phases13;
 import :tokens;
 import hai;
+import sv;
 
 using namespace c42;
 
 // {{{ Phase 1
-auto phase_1(const hai::cstr &file) {
-  hai::chain<token> res { file.size() };
+auto phase_1(sv file) {
+  // TODO: assert file is less than 2GB
+  hai::chain<token> res { static_cast<unsigned>(file.size()) };
   unsigned line = 1;
   unsigned column = 1;
   for (auto i = 0U; i < file.size(); i++) {
