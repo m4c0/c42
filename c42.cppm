@@ -56,6 +56,10 @@ static auto phase_4_1(const context & ctx) {
       t = str.take();
       t.type = t_directive;
       consume_space(str);
+    } else if (t.type == t_identifier && ctx.txt(t) == "export") {
+      t.type = t_export;
+      res.push_back(t);
+      continue; // process next token as if it wasn't exported
     } else if (t.type == t_import) {
       consume_space(str);
     } else if (t.type == t_module) {
