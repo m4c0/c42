@@ -36,6 +36,8 @@ static void consume_space(token_stream &str) {
 }
 
 static auto take_until_eol(const context & ctx, token_stream & str, token_type type) {
+  consume_space(str);
+
   auto t = str.take();
   auto rt = t;
   auto nt = t;
@@ -67,15 +69,12 @@ static auto phase_4_1(const context & ctx) {
         // TODO: error message
         t.type = t_error;
       } else if (ctx.txt(t) == "error") {
-        consume_space(str);
         res.push_back(take_until_eol(ctx, str, t_error));
         continue;
       } else if (ctx.txt(t) == "pragma") {
-        consume_space(str);
         res.push_back(take_until_eol(ctx, str, t_pragma));
         continue;
       } else if (ctx.txt(t) == "warning") {
-        consume_space(str);
         res.push_back(take_until_eol(ctx, str, t_warning));
         continue;
       } else {
