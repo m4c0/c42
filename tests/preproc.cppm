@@ -1,5 +1,6 @@
 module;
 #include <stdio.h>
+#include "header.h"
 
 export module preproc;
 export import a;

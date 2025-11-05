@@ -6,7 +6,7 @@ import jute;
 import print;
 
 int main() try {
-  jute::view fn = "tests/embedding.cpp";
+  jute::view fn = "tests/preproc.cppm";
   auto buf = jojo::read_cstr(fn);
   auto tokens = c42::preprocess(buf);
 
