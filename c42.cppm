@@ -2,12 +2,10 @@ export module c42;
 import :phases13;
 import :tokens;
 import hai;
-import jute;
 import sv;
 import traits;
 
 using namespace c42;
-using namespace jute::literals;
 
 class context {
   const char * m_orig_src;
@@ -26,8 +24,8 @@ public:
 
   [[nodiscard]] context shallow() const { return context { m_orig_src, m_t.size() }; }
   [[nodiscard]] token_stream stream() const { return token_stream { m_t }; }
-  [[nodiscard]] jute::view txt(token t) const {
-    return jute::view { m_orig_src + t.begin, t.end - t.begin + 1 };
+  [[nodiscard]] sv txt(token t) const {
+    return { m_orig_src + t.begin, t.end - t.begin + 1 };
   }
 
   auto take() { return traits::move(m_t); }
