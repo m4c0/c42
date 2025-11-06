@@ -129,8 +129,16 @@ auto phase_4_1(const token_list & ctx) {
         t = str.take();
         t.type = t.type == t_identifier ? t_define : t_error;
 
-        // TODO: mark before and after with extra tokens
         consume_space(str);
+        while (str.has_more() && t.type != t_new_line) {
+          res.push_back(t);
+          t = str.take();
+        }
+
+        t.type = t_ex;
+        t.end = t.begin;
+        res.push_back(t);
+        continue;
       } else if (ctx.txt(t) == "else") {
         take_no_param(res, str, t, t_else);
         continue;
