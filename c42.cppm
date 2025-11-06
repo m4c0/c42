@@ -89,6 +89,9 @@ static auto phase_4_1(const context & ctx) {
       } else if (ctx.txt(t) == "error") {
         res.push_back(take_until_eol(str, t_error));
         continue;
+      } else if (ctx.txt(t) == "include") {
+        res.push_back(take_until_eol(str, t_include));
+        continue;
       } else if (ctx.txt(t) == "pragma") {
         res.push_back(take_until_eol(str, t_pragma));
         continue;
