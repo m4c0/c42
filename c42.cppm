@@ -12,11 +12,11 @@ static void do_ifdef(bool take, token ot, token_stream & str, context & res) {
     switch (t.type) {
       case t_ifdef:
         // TODO: interpret the define
-        do_ifdef(true, t, str, res);
+        do_ifdef(take && true, t, str, res);
         break;
       case t_ifndef:
         // TODO: interpret the define
-        do_ifdef(false, t, str, res);
+        do_ifdef(take && false, t, str, res);
         break;
       case t_else:
         do_ifdef(!take, t, str, res);
