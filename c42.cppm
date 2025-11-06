@@ -4,7 +4,7 @@ import :phase41;
 import :tokens;
 import sv;
 
-static void do_ifdef(bool take, token ot, token_stream & str, context & res) {
+static void do_ifdef(bool take, token ot, token_stream & str, token_list & res) {
   while (str.has_more()) {
     auto t = str.take();
     switch (t.type) {
@@ -39,8 +39,8 @@ static void do_ifdef(bool take, token ot, token_stream & str, context & res) {
 }
 
 /// Process supported directives
-static auto phase_4_2(const context & ctx) {
-  context res = ctx.shallow();
+static auto phase_4_2(const token_list & ctx) {
+  auto res = ctx.shallow();
   token_stream str { ctx };
   while (str.has_more()) {
     auto t = str.take();
@@ -69,13 +69,12 @@ static auto phase_4_2(const context & ctx) {
   return res;
 }
 
-static auto phase_4(const context & ctx) {
+static auto phase_4(const token_list & ctx) {
   return phase_4_2(phase_4_1(ctx));
 }
 
 export namespace c42 {
   auto preprocess(sv buf) {
-    context ctx { buf.begin(), phase_3(phase_2(phase_1(buf))) };
-    return phase_4(ctx);
+    return phase_4(phase_3(phase_2(phase_1(buf))));
   }
 }

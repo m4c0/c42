@@ -70,7 +70,7 @@ static auto take_until_semi(token_stream & str, token_type type) {
   return rt;
 }
 
-static void take_no_param(context & res, token_stream & str, token t, token_type type) {
+static void take_no_param(token_list & res, token_stream & str, token t, token_type type) {
   t.type = type;
   res.push_back(t);
 
@@ -83,8 +83,8 @@ static void take_no_param(context & res, token_stream & str, token t, token_type
 }
 
 /// Translates preprocessor directives (#, import, export) into custom tokens
-auto phase_4_1(const context & ctx) {
-  context res = ctx.shallow();
+auto phase_4_1(const token_list & ctx) {
+  auto res = ctx.shallow();
   token_stream str { ctx };
   while (str.has_more()) {
     consume_space(str);

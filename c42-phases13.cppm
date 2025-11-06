@@ -6,8 +6,7 @@ using namespace c42;
 
 // {{{ Phase 1
 auto phase_1(sv file) {
-  // TODO: assert file is less than 2GB
-  token_list res { static_cast<unsigned>(file.size()) };
+  token_list res { file };
   unsigned line = 1;
   unsigned column = 1;
   for (auto i = 0U; i < file.size(); i++) {
@@ -42,7 +41,7 @@ auto phase_1(sv file) {
 
 // {{{ Phase 2
 auto phase_2(const token_list & t) {
-  token_list res { t.size() };
+  auto res = t.shallow();
   token_stream str{t};
 
   if (str.peek(0).type == 0xFE && str.peek(1).type == 0xFF) {
@@ -221,7 +220,7 @@ static token pp_number(token_stream &str, const token &t) { // {{{
 } // }}}
 
 auto phase_3(const token_list &t) {
-  token_list res{ t.size() };
+  auto res = t.shallow();
   token_stream str{t};
   while (str.has_more()) {
     if (str.matches("import")) {

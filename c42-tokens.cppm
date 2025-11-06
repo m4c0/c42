@@ -41,22 +41,36 @@ namespace c42 {
 
   export struct oob {};
   class token_list {
+    sv m_orig_src;
+
     hay<token[], nullptr, nullptr> m_data;
     unsigned m_size = 0;
     unsigned m_capacity;
     
   public:
-    constexpr token_list(unsigned capacity) :
-      m_data { capacity }
+    constexpr token_list(sv orig_src, unsigned capacity) :
+      m_orig_src { orig_src }
+    , m_data { capacity }
     , m_capacity { capacity }
     {}
 
-    constexpr const auto * begin() const { return &m_data[0]; }
-    constexpr const auto * end() const { return &m_data[m_size]; }
+    // TODO: assert file is less than 2GB
+    constexpr token_list(sv orig_src) : token_list { orig_src, static_cast<unsigned>(orig_src.size()) } {}
 
-    constexpr auto size() const { return m_size; }
-    constexpr auto seek(unsigned n) const {
+    [[nodiscard]] constexpr const auto * begin() const { return &m_data[0]; }
+    [[nodiscard]] constexpr const auto * end() const { return &m_data[m_size]; }
+
+    [[nodiscard]] constexpr auto size() const { return m_size; }
+    [[nodiscard]] constexpr auto seek(unsigned n) const {
       return n >= m_size ? token {} : m_data[n];
+    }
+
+    [[nodiscard]] constexpr sv txt(token t) const {
+      return m_orig_src.subview(t.begin, t.end - t.begin + 1).middle;
+    }
+
+    [[nodiscard]] constexpr auto shallow() const {
+      return token_list { m_orig_src, m_size };
     }
 
     constexpr void push_back(token t) {
@@ -97,21 +111,6 @@ namespace c42 {
           return false;
       }
       return true;
-    }
-  };
-
-  class context : public token_list {
-    const char * m_orig_src;
-
-  public:
-    constexpr context(const char * orig_src, token_list t) :
-      token_list { traits::move(t) }
-    , m_orig_src { orig_src }
-    {}
-
-    [[nodiscard]] context shallow() const { return context { m_orig_src, { size() } }; }
-    [[nodiscard]] sv txt(token t) const {
-      return { m_orig_src + t.begin, t.end - t.begin + 1 };
     }
   };
 } 
