@@ -1,6 +1,7 @@
 export module c42:tokens;
-import hai;
+import hay;
 import sv;
+import traits;
 
 namespace c42 {
   export enum token_type : int {
@@ -37,7 +38,32 @@ namespace c42 {
     unsigned line;
     unsigned column;
   };
-  using token_list = hai::chain<token>;
+
+  export struct oob {};
+  class token_list {
+    hay<token[], nullptr, nullptr> m_data;
+    unsigned m_size = 0;
+    unsigned m_capacity;
+    
+  public:
+    constexpr token_list(unsigned capacity) :
+      m_data { capacity }
+    , m_capacity { capacity }
+    {}
+
+    constexpr const auto * begin() const { return &m_data[0]; }
+    constexpr const auto * end() const { return &m_data[m_size]; }
+
+    constexpr auto size() const { return m_size; }
+    constexpr auto seek(unsigned n) const {
+      return n >= m_size ? token {} : m_data[n];
+    }
+
+    constexpr void push_back(token t) {
+      if (m_size > m_capacity) throw oob {};
+      m_data[m_size++] = t;
+    }
+  };
 
   class token_stream {
     const token_list & m_tokens;
@@ -79,8 +105,8 @@ namespace c42 {
     token_list m_t; 
 
   public:
-    constexpr context(const char * orig_src, token_list t)
-      : m_orig_src { orig_src }
+    constexpr context(const char * orig_src, token_list t) :
+      m_orig_src { orig_src }
     , m_t { traits::move(t) }
     {}
 
