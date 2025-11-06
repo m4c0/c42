@@ -104,6 +104,7 @@ auto phase_4_1(const token_list & ctx) {
         t = str.take();
         t.type = t.type == t_identifier ? t_define : t_error;
 
+        // TODO: mark before and after with extra tokens
         consume_space(str);
       } else if (ctx.txt(t) == "else") {
         take_no_param(res, str, t, t_else);
@@ -145,9 +146,11 @@ auto phase_4_1(const token_list & ctx) {
       res.push_back(t);
       continue; // process next token as if it wasn't exported
     } else if (t.type == t_import) {
+      // TODO: transform into [-8]name[-X]part or similar
       res.push_back(take_until_semi(str, t_import));
       continue;
     } else if (t.type == t_module) {
+      // TODO: transform into [-9]name[-X]part or similar
       res.push_back(take_until_semi(str, t_module));
       continue;
     }
