@@ -1,6 +1,5 @@
 #pragma leco tool
 import c42;
-import hai;
 import jojo;
 import jute;
 import print;

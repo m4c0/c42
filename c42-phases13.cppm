@@ -1,6 +1,5 @@
 export module c42:phases13;
 import :tokens;
-import hai;
 import sv;
 
 using namespace c42;
@@ -8,7 +7,7 @@ using namespace c42;
 // {{{ Phase 1
 auto phase_1(sv file) {
   // TODO: assert file is less than 2GB
-  hai::chain<token> res { static_cast<unsigned>(file.size()) };
+  token_list res { static_cast<unsigned>(file.size()) };
   unsigned line = 1;
   unsigned column = 1;
   for (auto i = 0U; i < file.size(); i++) {
@@ -42,8 +41,8 @@ auto phase_1(sv file) {
 // }}}
 
 // {{{ Phase 2
-auto phase_2(const hai::chain<token> & t) {
-  hai::chain<token> res { t.size() };
+auto phase_2(const token_list & t) {
+  token_list res { t.size() };
   token_stream str{t};
 
   if (str.peek(0).type == 0xFE && str.peek(1).type == 0xFF) {
@@ -221,8 +220,8 @@ static token pp_number(token_stream &str, const token &t) { // {{{
   return merge(t_pp_number, t, nt);
 } // }}}
 
-auto phase_3(const hai::chain<token> &t) {
-  hai::chain<token> res{ t.size() };
+auto phase_3(const token_list &t) {
+  token_list res{ t.size() };
   token_stream str{t};
   while (str.has_more()) {
     if (str.matches("import")) {

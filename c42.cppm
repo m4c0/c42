@@ -2,7 +2,6 @@ export module c42;
 import :phases13;
 import :phase41;
 import :tokens;
-import hai;
 import sv;
 import traits;
 

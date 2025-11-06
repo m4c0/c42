@@ -37,9 +37,10 @@ namespace c42 {
     unsigned line;
     unsigned column;
   };
+  using token_list = hai::chain<token>;
 
   class token_stream {
-    const hai::chain<token> & m_tokens;
+    const token_list & m_tokens;
     unsigned offset{};
   
     token eof() const {
@@ -48,7 +49,7 @@ namespace c42 {
     }
   
   public:
-    explicit token_stream(const hai::chain<token> & t) : m_tokens(t) {}
+    explicit token_stream(const token_list & t) : m_tokens(t) {}
   
     bool has_more() { return offset < m_tokens.size(); }
   
@@ -75,10 +76,10 @@ namespace c42 {
 
   class context {
     const char * m_orig_src;
-    hai::chain<token> m_t; 
+    token_list m_t; 
 
   public:
-    constexpr context(const char * orig_src, hai::chain<token> t)
+    constexpr context(const char * orig_src, token_list t)
       : m_orig_src { orig_src }
     , m_t { traits::move(t) }
     {}
