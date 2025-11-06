@@ -80,6 +80,13 @@ static auto phase_4_1(const context & ctx) {
       if (t.type != t_identifier) {
         // TODO: error message
         t.type = t_error;
+      } else if (ctx.txt(t) == "define") {
+        consume_space(str);
+
+        t = str.take();
+        t.type = t.type == t_identifier ? t_define : t_error;
+
+        consume_space(str);
       } else if (ctx.txt(t) == "else") {
         take_no_param(res, str, t, t_else);
         continue;
