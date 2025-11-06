@@ -39,9 +39,35 @@ static auto take_until_eol(token_stream & str, token_type type) {
   consume_space(str);
 
   auto t = str.take();
+  if (t.type == t_new_line) {
+    t.type = t_error;
+    return t;
+  }
+
   auto rt = t;
   auto nt = t;
   while (str.has_more() && t.type != t_new_line) {
+    nt = t;
+    t = str.take();
+  }
+  rt.type = type;
+  rt.end = nt.end;
+  return rt;
+}
+
+static auto take_until_semi(token_stream & str, token_type type) {
+  consume_space(str);
+
+  auto t = str.take();
+  if (t.type == ';') {
+    t.type = type;
+    t.end--;
+    return t;
+  }
+
+  auto rt = t;
+  auto nt = t;
+  while (str.has_more() && t.type != ';') {
     nt = t;
     t = str.take();
   }
@@ -59,7 +85,6 @@ static void take_no_param(context & res, token_stream & str, token t, token_type
     return;
   }
 
-  // TODO: error message
   res.push_back(take_until_eol(str, t_error));
 }
 
@@ -78,7 +103,6 @@ static auto phase_4_1(const context & ctx) {
 
       t = str.take();
       if (t.type != t_identifier) {
-        // TODO: error message
         t.type = t_error;
       } else if (ctx.txt(t) == "define") {
         consume_space(str);
@@ -97,6 +121,7 @@ static auto phase_4_1(const context & ctx) {
         res.push_back(take_until_eol(str, t_error));
         continue;
       } else if (ctx.txt(t) == "include") {
+        // TODO: check if "this" or <that>
         res.push_back(take_until_eol(str, t_include));
         continue;
       } else if (ctx.txt(t) == "pragma") {
@@ -114,9 +139,11 @@ static auto phase_4_1(const context & ctx) {
       res.push_back(t);
       continue; // process next token as if it wasn't exported
     } else if (t.type == t_import) {
-      consume_space(str);
+      res.push_back(take_until_semi(str, t_import));
+      continue;
     } else if (t.type == t_module) {
-      consume_space(str);
+      res.push_back(take_until_semi(str, t_module));
+      continue;
     }
 
     res.push_back(t);

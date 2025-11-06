@@ -1,5 +1,4 @@
 export module c42:tokens;
-import jute;
 import hai;
 
 namespace c42 {
@@ -25,6 +24,7 @@ namespace c42 {
     t_new_line = '\n',
     t_space = ' ',
   };
+  // TODO: custom error messages
   export struct token {
     token_type type;
     unsigned begin;
