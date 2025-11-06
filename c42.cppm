@@ -3,7 +3,6 @@ import :phases13;
 import :phase41;
 import :tokens;
 import sv;
-import traits;
 
 static void do_ifdef(bool take, token ot, token_stream & str, context & res) {
   while (str.has_more()) {
