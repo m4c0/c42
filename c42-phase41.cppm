@@ -49,25 +49,50 @@ static auto take_ident(token_stream & str, token_type type) {
   return t;
 }
 
-static auto take_until_semi(token_stream & str, token_type type) {
+static void error_until_semi(token_list & res, token_stream & str, token t) {
+  t.type = t_error;
+  res.push_back(t);
+  while (str.has_more() && str.peek().type != ';') {
+    res.push_back(str.take());
+  }
+}
+
+static void take_module_name(token_list & res, token_stream & str, token_type type) {
   consume_space(str);
 
   auto t = str.take();
   if (t.type == ';') {
     t.type = type;
     t.end--;
-    return t;
+    res.push_back(t);
+    return;
+  }
+  if (t.type == t_identifier) {
+    t.type = type;
+    res.push_back(t);
+
+    consume_space(str);
+    t = str.take();
+    if (t.type == ';') return;
+  } else if (t.type == ':') {
+    auto rt = t;
+    rt.type = type;
+    rt.end--;
+    res.push_back(rt);
   }
 
-  auto rt = t;
-  auto nt = t;
-  while (str.has_more() && t.type != ';') {
-    nt = t;
-    t = str.take();
-  }
-  rt.type = type;
-  rt.end = nt.end;
-  return rt;
+  if (t.type != ':') return error_until_semi(res, str, t);
+
+  consume_space(str);
+  t = str.take();
+  if (t.type != t_identifier) return error_until_semi(res, str, t);
+
+  t.type = t_ex;
+  res.push_back(t);
+
+  consume_space(str);
+  t = str.take();
+  if (t.type != ';') return error_until_semi(res, str, t);
 }
 
 static void take_no_param(token_list & res, token_stream & str, token t, token_type type) {
@@ -146,12 +171,10 @@ auto phase_4_1(const token_list & ctx) {
       res.push_back(t);
       continue; // process next token as if it wasn't exported
     } else if (t.type == t_import) {
-      // TODO: transform into [-8]name[-X]part or similar
-      res.push_back(take_until_semi(str, t_import));
+      take_module_name(res, str, t_import);
       continue;
     } else if (t.type == t_module) {
-      // TODO: transform into [-9]name[-X]part or similar
-      res.push_back(take_until_semi(str, t_module));
+      take_module_name(res, str, t_module);
       continue;
     }
 

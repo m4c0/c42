@@ -26,7 +26,7 @@ namespace c42 {
     t_char = -4,
     t_identifier = -3,
     t_eof = -2,
-    t_null = -1,
+    t_ex = -1,
     t_new_line = '\n',
     t_space = ' ',
   };
