@@ -1,5 +1,6 @@
 export module c42:tokens;
 import hai;
+import sv;
 
 namespace c42 {
   export enum token_type : int {
@@ -70,5 +71,27 @@ namespace c42 {
       }
       return true;
     }
+  };
+
+  class context {
+    const char * m_orig_src;
+    hai::chain<token> m_t; 
+
+  public:
+    constexpr context(const char * orig_src, hai::chain<token> t)
+      : m_orig_src { orig_src }
+    , m_t { traits::move(t) }
+    {}
+
+    [[nodiscard]] context shallow() const { return context { m_orig_src, { m_t.size() } }; }
+    [[nodiscard]] token_stream stream() const { return token_stream { m_t }; }
+    [[nodiscard]] sv txt(token t) const {
+      return { m_orig_src + t.begin, t.end - t.begin + 1 };
+    }
+
+    [[nodiscard]] auto begin() const { return m_t.begin(); }
+    [[nodiscard]] auto end() const { return m_t.end(); }
+
+    void push_back(token t) { m_t.push_back(t); }
   };
 } 
