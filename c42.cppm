@@ -41,7 +41,7 @@ static void do_ifdef(bool take, token ot, token_stream & str, context & res) {
 /// Process supported directives
 static auto phase_4_2(const context & ctx) {
   context res = ctx.shallow();
-  auto str = ctx.stream();
+  token_stream str { ctx };
   while (str.has_more()) {
     auto t = str.take();
 

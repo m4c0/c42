@@ -85,7 +85,7 @@ static void take_no_param(context & res, token_stream & str, token t, token_type
 /// Translates preprocessor directives (#, import, export) into custom tokens
 auto phase_4_1(const context & ctx) {
   context res = ctx.shallow();
-  auto str = ctx.stream();
+  token_stream str { ctx };
   while (str.has_more()) {
     consume_space(str);
 

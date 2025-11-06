@@ -100,25 +100,18 @@ namespace c42 {
     }
   };
 
-  class context {
+  class context : public token_list {
     const char * m_orig_src;
-    token_list m_t; 
 
   public:
     constexpr context(const char * orig_src, token_list t) :
-      m_orig_src { orig_src }
-    , m_t { traits::move(t) }
+      token_list { traits::move(t) }
+    , m_orig_src { orig_src }
     {}
 
-    [[nodiscard]] context shallow() const { return context { m_orig_src, { m_t.size() } }; }
-    [[nodiscard]] token_stream stream() const { return token_stream { m_t }; }
+    [[nodiscard]] context shallow() const { return context { m_orig_src, { size() } }; }
     [[nodiscard]] sv txt(token t) const {
       return { m_orig_src + t.begin, t.end - t.begin + 1 };
     }
-
-    [[nodiscard]] auto begin() const { return m_t.begin(); }
-    [[nodiscard]] auto end() const { return m_t.end(); }
-
-    void push_back(token t) { m_t.push_back(t); }
   };
 } 
