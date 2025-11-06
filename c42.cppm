@@ -55,6 +55,26 @@ static auto take_until_eol(token_stream & str, token_type type) {
   return rt;
 }
 
+static auto take_ident(token_stream & str, token_type type) {
+  consume_space(str);
+
+  if (str.peek().type != t_identifier) return take_until_eol(str, t_error);
+
+  auto t = str.take();
+
+  consume_space(str);
+  if (str.peek().type != t_new_line) {
+    t.type = t_error;
+
+    auto rt = take_until_eol(str, t_error);
+    t.end = rt.end;
+    return t;
+  }
+
+  t.type = type;
+  return t;
+}
+
 static auto take_until_semi(token_stream & str, token_type type) {
   consume_space(str);
 
@@ -117,8 +137,20 @@ static auto phase_4_1(const context & ctx) {
       } else if (ctx.txt(t) == "endif") {
         take_no_param(res, str, t, t_endif);
         continue;
+      } else if (ctx.txt(t) == "elifdef") {
+        res.push_back(take_ident(str, t_elifdef));
+        continue;
+      } else if (ctx.txt(t) == "elifndef") {
+        res.push_back(take_ident(str, t_elifndef));
+        continue;
       } else if (ctx.txt(t) == "error") {
         res.push_back(take_until_eol(str, t_error));
+        continue;
+      } else if (ctx.txt(t) == "ifdef") {
+        res.push_back(take_ident(str, t_ifdef));
+        continue;
+      } else if (ctx.txt(t) == "ifndef") {
+        res.push_back(take_ident(str, t_ifndef));
         continue;
       } else if (ctx.txt(t) == "include") {
         // TODO: check if "this" or <that>

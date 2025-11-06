@@ -3,6 +3,10 @@ import hai;
 
 namespace c42 {
   export enum token_type : int {
+    t_elifndef = -22,
+    t_elifdef = -21,
+    t_ifndef = -20,
+    t_ifdef = -19,
     t_define = -18,
     t_include = -17,
     t_else = -16,
