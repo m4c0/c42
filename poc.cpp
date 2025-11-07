@@ -3,11 +3,20 @@ import c42;
 import jojo;
 import jute;
 import print;
+import sv;
+
+struct defs : c42::defines {
+  bool has(sv name) const override {
+    return name == "_WIN32";
+  }
+};
 
 int main() try {
+  defs d {};
+
   jute::view fn = "tests/preproc.cppm";
   auto buf = jojo::read_cstr(fn);
-  auto ctx = c42::preprocess(buf);
+  auto ctx = c42::preprocess(&d, buf);
 
   const auto log = [&](auto t, jute::view lvl) {
     errln(fn, ":", t.line, ":", t.column, ": [", lvl, "] ", ctx.txt(t));
