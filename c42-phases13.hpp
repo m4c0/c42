@@ -213,25 +213,10 @@ static token pp_number(token_stream &str, const token &t) { // {{{
   return merge(t_pp_number, t, nt);
 } // }}}
 
-static auto phase_3(const token_list &t) {
-  auto res = t.shallow();
-  token_stream str{t};
+static auto phase_3(const token_list & ctx) {
+  auto res = ctx.shallow();
+  token_stream str { ctx };
   while (str.has_more()) {
-    if (str.matches("import")) {
-      token t = str.peek();
-      t.type = t_import;
-      t.end = t.begin + 5;
-      str.skip(6);
-      res.push_back(t);
-    }
-    if (str.matches("module")) {
-      token t = str.peek();
-      t.type = t_module;
-      t.end = t.begin + 5;
-      str.skip(6);
-      res.push_back(t);
-    }
-
     token t = str.take();
     if (t.type == '/') {
       res.push_back(comment(str, t));
@@ -300,7 +285,16 @@ static auto phase_3(const token_list &t) {
       continue;
     }
     if (is_ident_start(t)) {
-      res.push_back(identifier(str, t));
+      auto nt = identifier(str, t);
+
+      auto txt = ctx.txt(nt);
+      if (txt == "import") {
+        t.type = t_import;
+      } else if (txt == "module") {
+        t.type = t_module;
+      }
+
+      res.push_back(nt);
       continue;
     }
 
