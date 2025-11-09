@@ -285,16 +285,16 @@ static auto phase_3(const token_list & ctx) {
       continue;
     }
     if (is_ident_start(t)) {
-      auto nt = identifier(str, t);
+      t = identifier(str, t);
 
-      auto txt = ctx.txt(nt);
+      auto txt = ctx.txt(t);
       if (txt == "import") {
         t.type = t_import;
       } else if (txt == "module") {
         t.type = t_module;
       }
 
-      res.push_back(nt);
+      res.push_back(t);
       continue;
     }
 
