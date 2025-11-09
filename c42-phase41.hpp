@@ -1,6 +1,3 @@
-export module c42:phase41;
-import :tokens;
-
 using namespace c42;
 
 static void consume_space(token_stream &str) {

@@ -1,9 +1,3 @@
-export module c42:phases13;
-import :tokens;
-import sv;
-
-using namespace c42;
-
 // {{{ Phase 1
 auto phase_1(sv file) {
   token_list res { file };

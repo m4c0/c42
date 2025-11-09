@@ -1,8 +1,15 @@
 export module c42;
-import :phases13;
-import :phase41;
-import :tokens;
+import hay;
 import sv;
+import traits;
+
+namespace c42 {}
+
+using namespace c42;
+
+#include "c42-tokens.hpp"
+#include "c42-phases13.hpp"
+#include "c42-phase41.hpp"
 
 export namespace c42 {
   struct defines {

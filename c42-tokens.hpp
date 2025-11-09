@@ -1,8 +1,3 @@
-export module c42:tokens;
-import hay;
-import sv;
-import traits;
-
 namespace c42 {
   export enum token_type : int {
     t_elifndef = -22,
