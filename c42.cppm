@@ -3,19 +3,16 @@ import hay;
 import sv;
 import traits;
 
-namespace c42 {}
-
-using namespace c42;
-
 #include "c42-tokens.hpp"
+
+// TODO: cleanup the namespace definition
+namespace c42 {
 #include "c42-phases13.hpp"
 #include "c42-phase41.hpp"
 
-export namespace c42 {
-  struct defines {
+  export struct defines {
     virtual bool has(sv name) const = 0;
   };
-}
 
 static void do_ifdef(bool take, defines * defs, token ot, token_stream & str, token_list & res) {
   while (str.has_more()) {
@@ -80,8 +77,7 @@ static auto phase_4(defines * defs, const token_list & ctx) {
   return phase_4_2(defs, phase_4_1(ctx));
 }
 
-export namespace c42 {
-  auto preprocess(defines * defs, sv buf) {
+  export auto preprocess(defines * defs, sv buf) {
     return phase_4(defs, phase_3(phase_2(phase_1(buf))));
   }
 }

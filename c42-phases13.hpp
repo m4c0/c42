@@ -1,5 +1,5 @@
 // {{{ Phase 1
-auto phase_1(sv file) {
+static auto phase_1(sv file) {
   token_list res { file };
   unsigned line = 1;
   unsigned column = 1;
@@ -34,7 +34,7 @@ auto phase_1(sv file) {
 // }}}
 
 // {{{ Phase 2
-auto phase_2(const token_list & t) {
+static auto phase_2(const token_list & t) {
   auto res = t.shallow();
   token_stream str{t};
 
@@ -213,7 +213,7 @@ static token pp_number(token_stream &str, const token &t) { // {{{
   return merge(t_pp_number, t, nt);
 } // }}}
 
-auto phase_3(const token_list &t) {
+static auto phase_3(const token_list &t) {
   auto res = t.shallow();
   token_stream str{t};
   while (str.has_more()) {
