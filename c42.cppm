@@ -1,7 +1,6 @@
 export module c42;
 import hay;
 import sv;
-import traits;
 
 #include "c42-tokens.hpp"
 
