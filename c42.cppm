@@ -14,6 +14,7 @@ namespace c42 {
   };
 
 static void do_ifdef(bool take, defines * defs, token ot, token_stream & str, token_list & res) {
+  bool taken = false;
   while (str.has_more()) {
     auto t = str.take();
     switch (t.type) {
@@ -26,19 +27,41 @@ static void do_ifdef(bool take, defines * defs, token ot, token_stream & str, to
       case t_ifndef:
         do_ifdef(take && !defs->has(res.txt(t)), defs, t, str, res);
         break;
-      case t_else:
-        take = !take;
-        break;
+
       case t_endif:
         return;
+
+      case t_else:
+        if (take) {
+          taken = true;
+          take = false;
+        } else if (!taken) {
+          take = true;
+        }
+        break;
       case t_elif:
-        take = !take && defs->has(res.txt(t));;
+        if (take) {
+          taken = true;
+          take = false;
+        } else if (!taken) {
+          take = defs->has(res.txt(t));
+        }
         break;
       case t_elifdef:
-        take = !take && defs->has(res.txt(t));;
+        if (take) {
+          taken = true;
+          take = false;
+        } else if (!taken) {
+          take = defs->has(res.txt(t));
+        }
         break;
       case t_elifndef:
-        take = !take && !defs->has(res.txt(t));;
+        if (take) {
+          taken = true;
+          take = false;
+        } else if (!taken) {
+          take = !defs->has(res.txt(t));
+        }
         break;
       default:
         if (take) res.push_back(t);
