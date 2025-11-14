@@ -18,6 +18,8 @@ static void do_ifdef(bool take, defines * defs, token ot, token_stream & str, to
     auto t = str.take();
     switch (t.type) {
       case t_if:
+        do_ifdef(take && defs->has(res.txt(t)), defs, t, str, res);
+        break;
       case t_ifdef:
         do_ifdef(take && defs->has(res.txt(t)), defs, t, str, res);
         break;
@@ -25,16 +27,18 @@ static void do_ifdef(bool take, defines * defs, token ot, token_stream & str, to
         do_ifdef(take && !defs->has(res.txt(t)), defs, t, str, res);
         break;
       case t_else:
-        do_ifdef(!take, defs, t, str, res);
-        return;
+        take = !take;
+        break;
       case t_endif:
         return;
       case t_elif:
+        take = !take && defs->has(res.txt(t));;
+        break;
       case t_elifdef:
-        do_ifdef(!take && defs->has(res.txt(t)), defs, t, str, res);
+        take = !take && defs->has(res.txt(t));;
         break;
       case t_elifndef:
-        do_ifdef(!take && !defs->has(res.txt(t)), defs, t, str, res);
+        take = !take && !defs->has(res.txt(t));;
         break;
       default:
         if (take) res.push_back(t);
@@ -54,6 +58,8 @@ static auto phase_4_2(defines * defs, const token_list & ctx) {
 
     switch (t.type) {
       case t_if:
+        do_ifdef(defs->has(ctx.txt(t)), defs, t, str, res);
+        break;
       case t_ifdef:
         do_ifdef(defs->has(ctx.txt(t)), defs, t, str, res);
         break;
