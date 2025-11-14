@@ -119,7 +119,9 @@ static auto phase_4_1(const token_list & ctx) {
 
       t = str.take();
       if (t.type != t_identifier) {
-        t.type = t_error;
+        t.type = t_directive;
+
+        consume_space(str);
       } else if (ctx.txt(t) == "define") {
         consume_space(str);
 
