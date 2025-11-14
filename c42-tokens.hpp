@@ -1,5 +1,7 @@
 namespace c42 {
   export enum token_type : int {
+    t_elif = -24,
+    t_if = -23,
     t_elifndef = -22,
     t_elifdef = -21,
     t_ifndef = -20,

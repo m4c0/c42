@@ -142,6 +142,9 @@ static auto phase_4_1(const token_list & ctx) {
       } else if (ctx.txt(t) == "endif") {
         take_no_param(res, str, t, t_endif);
         continue;
+      } else if (ctx.txt(t) == "elif") {
+        res.push_back(take_ident(str, t_elif));
+        continue;
       } else if (ctx.txt(t) == "elifdef") {
         res.push_back(take_ident(str, t_elifdef));
         continue;
@@ -150,6 +153,9 @@ static auto phase_4_1(const token_list & ctx) {
         continue;
       } else if (ctx.txt(t) == "error") {
         res.push_back(take_until_eol(str, t_error));
+        continue;
+      } else if (ctx.txt(t) == "if") {
+        res.push_back(take_ident(str, t_if));
         continue;
       } else if (ctx.txt(t) == "ifdef") {
         res.push_back(take_ident(str, t_ifdef));
