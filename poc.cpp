@@ -14,7 +14,7 @@ struct defs : c42::defines {
 int main() try {
   defs d {};
 
-  jute::view fn = "tests/preproc.cppm";
+  jute::view fn = "tests/strings.cpp";
   auto buf = jojo::slurp(fn);
   auto ctx = c42::preprocess(&d, buf);
 
