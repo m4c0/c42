@@ -15,7 +15,7 @@ int main() try {
   defs d {};
 
   jute::view fn = "tests/shader.glsl";
-  auto buf = jojo::read_cstr(fn);
+  auto buf = jojo::slurp(fn);
   auto ctx = c42::preprocess(&d, buf);
 
   const auto log = [&](auto t, jute::view lvl) {
